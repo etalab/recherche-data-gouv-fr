@@ -1,0 +1,9 @@
+flask:
+  secret_key: ${SECRET_KEY:'you-will-never-guess'}
+
+elasticsearch:
+  url: ${DOKKU_ELASTICSEARCH_RECHERCHE_URL:'http://localhost:9200'}
+
+catalog_url:
+  datasets: 'https://www.data.gouv.fr/fr/datasets/r/f868cca6-8da1-4369-a78d-47463f19a9a3'
+  organizations: 'https://www.data.gouv.fr/fr/datasets/r/b7bbfedc-2448-4135-a6c7-104548d396e7'
