@@ -10,7 +10,7 @@ class Container(containers.DeclarativeContainer):
 
     search_client = providers.Singleton(
         ElasticClient,
-        url=config.elasticsearch.url
+        url=config.elasticsearch_url
     )
 
     dataset_service = providers.Factory(

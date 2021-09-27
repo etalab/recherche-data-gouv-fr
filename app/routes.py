@@ -9,7 +9,7 @@ from app.forms import SearchForm
 bp = Blueprint("main", __name__)
 
 
-@bp.route('/', methods=['GET', 'POST'], endpoint="index")
+@bp.route('/', methods=['GET', 'POST'], endpoint='index')
 @inject
 def index(dataset_service: DatasetService = Provide[Container.dataset_service]) -> str:
     form: SearchForm = SearchForm()
