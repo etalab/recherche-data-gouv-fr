@@ -13,3 +13,4 @@ class Testing:
     TESTING = True
     WTF_CSRF_ENABLED = False
     ELASTICSEARCH_URL = 'http://localhost:9200'
+    DATASETS_PER_PAGE = 20

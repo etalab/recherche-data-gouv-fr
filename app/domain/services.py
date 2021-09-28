@@ -22,5 +22,5 @@ class DatasetService:
             offset = 0
 
         results_number, results = self.search_client.query(search_text, "dataset", offset, self.dataset_page_size)
-        total_pages = round(results_number / self.dataset_page_size)
+        total_pages = round(results_number / self.dataset_page_size) or 1
         return results, results_number, total_pages

@@ -16,5 +16,5 @@ class Container(containers.DeclarativeContainer):
     dataset_service = providers.Factory(
         DatasetService,
         search_client=search_client,
-        dataset_page_size=20
+        dataset_page_size=config.datasets_per_page
     )
