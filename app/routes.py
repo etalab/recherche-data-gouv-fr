@@ -1,7 +1,6 @@
 from dependency_injector.wiring import inject, Provide
-from flask import render_template, Blueprint
+from flask import render_template, Blueprint, request, url_for
 from app.containers import Container
-from app.domain.entities import Dataset
 from app.domain.services import DatasetService
 from app.forms import SearchForm
 
@@ -9,12 +8,32 @@ from app.forms import SearchForm
 bp = Blueprint("main", __name__)
 
 
-@bp.route('/', methods=['GET', 'POST'], endpoint='index')
+@bp.route('/', methods=['GET'], endpoint='index')
 @inject
 def index(dataset_service: DatasetService = Provide[Container.dataset_service]) -> str:
-    form: SearchForm = SearchForm()
-    results: list[Dataset] = []
-    results_number: int = 0
-    if form.validate_on_submit():
-        results_number, results = dataset_service.search(form.query.data)
-    return render_template('index.html', form=form, results=results, results_number=results_number)
+    form = SearchForm()
+    results = []
+    results_number = 0
+    total_pages = 0
+    page = request.args.get('page', 1, type=int)
+    query_text = request.args.get('query', None)
+
+    if query_text:
+        results, results_number, total_pages = dataset_service.search(query_text, page)
+
+    first_url = url_for('main.index', query=query_text, page=1, _external=True)
+    next_url = url_for('main.index', query=query_text, page=page + 1, _external=True)
+    prev_url = url_for('main.index', query=query_text, page=page - 1, _external=True)
+    last_url = url_for('main.index', query=query_text, page=total_pages, _external=True)
+
+    return render_template('index.html',
+                           form=form,
+                           page=page,
+                           results=results,
+                           results_number=results_number,
+                           total_pages=total_pages,
+                           first_url=first_url if page > 1 else None,
+                           next_url=next_url if page < total_pages else None,
+                           prev_url=prev_url if page > 1 else None,
+                           last_url=last_url
+                           )

@@ -38,7 +38,7 @@
       </header>
     <main class="flex-1">
       <div class="md:max-w-screen-lg mx-auto mt-16">
-          <form action="" method="post" novalidate>
+          <form action="" method="get" novalidate>
               {{ form.hidden_tag() }}
               <div class="fr-search-bar" id="header-search" role="search">
                   {{ form.query.label(class_="fr-label") }}
@@ -53,6 +53,9 @@
           </form>
       </div>
         <div class="md:max-w-screen-lg mx-auto mt-16">
+            {% if results %}
+            <h2>{{results_number}} résultats sur {{total_pages}} pages</h2>
+            {% endif %}
             {% for result in results %}
             <div class="fr-card fr-enlarge-link mb-8">
                 <div class="fr-card__body">
@@ -64,48 +67,38 @@
                 </div>
             </div>
             {% endfor %}
-            <nav role="navigation" class="fr-pagination mx-auto" aria-label="Pagination">
-                <ul class="fr-pagination__list">
-                    <li>
-                        <a class="fr-pagination__link fr-pagination__link--first"></a>
-                    </li>
-                    <li>
-                        <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label"></a>
-                    </li>
-                    <li>
-                        <a class="fr-pagination__link" aria-current="page" title="Page 1">
-                            1
-                        </a>
-                    </li>
-                    <li>
-                        <a class="fr-pagination__link" href="#" title="Page 2">
-                            2
-                        </a>
-                    </li>
-                    <li>
-                        <a class="fr-pagination__link fr-displayed-lg" href="#" title="Page 3">
-                            3
-                        </a>
-                    </li>
-                    <li>
-                        <a class="fr-pagination__link fr-displayed-lg">
-                            …
-                        </a>
-                    </li>
-                    <li>
-                        <a class="fr-pagination__link fr-displayed-lg" href="#" title="Page 130">
-                            130
-                        </a>
-                    </li>
-                    <li>
-                        <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" href="#"></a>
-                    </li>
-                    <li>
-                        <a class="fr-pagination__link fr-pagination__link--last" href="#"></a>
-                    </li>
-                </ul>
-            </nav>
         </div>
+        {% if next_url or prev_url %}
+        <nav role="navigation" class="fr-pagination" aria-label="Pagination">
+            <ul class="fr-pagination__list justify-center">
+                <li>
+                    <a class="fr-pagination__link fr-pagination__link--first" href="{{ first_url or '#' }}">
+                        Première page
+                    </a>
+                </li>
+                <li>
+                    <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" href="{{ prev_url or '#' }}">
+                        Page précédente
+                    </a>
+                </li>
+                <li>
+                    <a class="fr-pagination__link" aria-current="page" title="Page">
+                        {{ page }}
+                    </a>
+                </li>
+                <li>
+                    <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" href="{{ next_url }}">
+                        Page suivante
+                    </a>
+                </li>
+                <li>
+                    <a class="fr-pagination__link fr-pagination__link--last" href="{{ last_url }}">
+                        Dernière page
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        {% endif %}
     </main>
       <footer class="fr-footer" role="contentinfo" id="footer">
         <div class="fr-container">

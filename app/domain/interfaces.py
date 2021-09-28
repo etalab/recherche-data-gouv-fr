@@ -8,5 +8,5 @@ class SearchClient:
     def index(self, object_to_index: object, index: str) -> None:
         raise NotImplementedError()
 
-    def query(self, query_text: str, index: str) -> Tuple[int, list[object]]:
+    def query(self, query_text: str, index: str, offset: int, page_size: int) -> Tuple[int, list[object]]:
         raise NotImplementedError()

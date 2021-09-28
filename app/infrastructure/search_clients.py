@@ -20,7 +20,7 @@ class ElasticClient(SearchClient):
     def index(self, object_to_index: object, index: str) -> None:
         self.es.index(index=index, body=asdict(object_to_index))
 
-    def query(self, query_text: str, index: str) -> Tuple[int, list[Dataset]]:
+    def query(self, query_text: str, index: str, offset: int, page_size: int) -> Tuple[int, list[Dataset]]:
         fields: list = [
             f"title^{2}",
             f"description^{2}",
@@ -28,6 +28,8 @@ class ElasticClient(SearchClient):
         ]
 
         query_body: dict = {
+            "from": offset,
+            "size": page_size,
             "query": {
                 "function_score": {
                     "query": {
