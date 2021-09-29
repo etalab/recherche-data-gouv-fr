@@ -1,5 +1,3 @@
-"""Containers module."""
-
 from dependency_injector import containers, providers
 from app.domain.services import DatasetService
 from app.infrastructure.search_clients import ElasticClient
@@ -10,7 +8,9 @@ class Container(containers.DeclarativeContainer):
 
     search_client = providers.Singleton(
         ElasticClient,
-        url=config.elasticsearch_url
+        url=config.elasticsearch_url,
+        search_dataset_featured_weight=config.search_dataset_featured_weight,
+        search_dataset_certified_weight=config.search_dataset_certified_weight
     )
 
     dataset_service = providers.Factory(

@@ -2,7 +2,7 @@ from dependency_injector.wiring import inject, Provide
 from flask import render_template, Blueprint, request, url_for
 from app.containers import Container
 from app.domain.services import DatasetService
-from app.forms import SearchForm
+from app.presentation.forms import SearchForm
 
 
 bp = Blueprint("main", __name__)

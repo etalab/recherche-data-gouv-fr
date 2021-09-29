@@ -1,12 +1,18 @@
+from abc import ABC, abstractmethod
 from typing import Tuple
+from app.domain.entities import Dataset
 
 
-class SearchClient:
+class SearchClient(ABC):
+
+    @abstractmethod
     def clean_index(self, index: str) -> None:
-        raise NotImplementedError()
+        pass
 
-    def index(self, object_to_index: object, index: str) -> None:
-        raise NotImplementedError()
+    @abstractmethod
+    def index_dataset(self, to_index: Dataset) -> None:
+        pass
 
-    def query(self, query_text: str, index: str, offset: int, page_size: int) -> Tuple[int, list[object]]:
-        raise NotImplementedError()
+    @abstractmethod
+    def query_datasets(self, query_text: str, offset: int, page_size: int) -> Tuple[int, list[Dataset]]:
+        pass

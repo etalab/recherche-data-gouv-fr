@@ -7,7 +7,7 @@ from dependency_injector.wiring import inject, Provide
 from flask import current_app, Flask
 from flask.cli import with_appcontext
 from app.containers import Container
-from app.utils import download_catalog
+from app.infrastructure.utils import download_catalog
 from app.domain.entities import Dataset
 from app.domain.interfaces import SearchClient
 
@@ -23,7 +23,7 @@ def seed_db(search_client: SearchClient = Provide[Container.search_client]) -> N
         dataset_rows = list(csv.DictReader(dataset_csvfile, delimiter=';'))
         org_rows = list(csv.DictReader(org_csvfile, delimiter=';'))
 
-        search_client.clean_index("dataset")
+        search_client.clean_index('dataset')
 
         with click.progressbar(dataset_rows) as bar:
             for dataset in bar:
@@ -40,7 +40,7 @@ def seed_db(search_client: SearchClient = Provide[Container.search_client]) -> N
                             'organization_name': org['name'],
                             'organization_badges': ast.literal_eval(org['badges'])
                         })
-                search_client.index(Dataset(**body), "dataset")
+                search_client.index_dataset(Dataset(**body))
 
 
 @click.command("seed-db")

@@ -1,6 +1,6 @@
 from dataclasses import asdict
 from typing import Tuple
-from elasticsearch import client, Elasticsearch
+from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError
 from app.domain.entities import Dataset
 from app.domain.interfaces import SearchClient
@@ -8,8 +8,17 @@ from app.domain.interfaces import SearchClient
 
 class ElasticClient(SearchClient):
 
-    def __init__(self, url: str):
-        self.es: client.Elasticsearch = Elasticsearch([url])
+    def __init__(
+            self,
+            url: str,
+            search_dataset_fields: list,
+            search_dataset_featured_weight: int,
+            search_dataset_certified_weight: int
+    ):
+        self.es = Elasticsearch([url])
+        self.search_dataset_fields = search_dataset_fields
+        self.search_dataset_featured_weight = search_dataset_featured_weight
+        self.search_dataset_certified_weight = search_dataset_certified_weight
 
     def clean_index(self, index: str) -> None:
         try:
@@ -17,16 +26,10 @@ class ElasticClient(SearchClient):
         except NotFoundError:
             pass
 
-    def index(self, object_to_index: object, index: str) -> None:
-        self.es.index(index=index, body=asdict(object_to_index))
+    def index_dataset(self, to_index: Dataset) -> None:
+        self.es.index(index='dataset', body=asdict(to_index))
 
-    def query(self, query_text: str, index: str, offset: int, page_size: int) -> Tuple[int, list[Dataset]]:
-        fields: list = [
-            f"title^{2}",
-            f"description^{2}",
-            f"organization_name^{2}",
-        ]
-
+    def query_datasets(self, query_text: str, offset: int, page_size: int) -> Tuple[int, list[Dataset]]:
         query_body: dict = {
             "from": offset,
             "size": page_size,
@@ -35,7 +38,7 @@ class ElasticClient(SearchClient):
                     "query": {
                         "multi_match": {
                             "query": query_text,
-                            "fields": fields
+                            "fields": self.search_dataset_fields
                         }
                     },
                     "functions": [
@@ -45,7 +48,7 @@ class ElasticClient(SearchClient):
                                     "featured": "true"
                                 }
                             },
-                            "weight": 1
+                            "weight": self.search_dataset_featured_weight
                         },
                         {
                             "filter": {
@@ -53,7 +56,7 @@ class ElasticClient(SearchClient):
                                     "organization_badges": "public-service"
                                 }
                             },
-                            "weight": 1
+                            "weight": self.search_dataset_certified_weight
                         }
                     ],
                     "score_mode": "multiply",
@@ -61,7 +64,7 @@ class ElasticClient(SearchClient):
                 }
             }
         }
-        result: dict = self.es.search(index=index, body=query_body, explain=True)
-        results_number: int = result["hits"]["total"]["value"]
-        res: list[Dataset] = [Dataset(**elem["_source"]) for elem in result["hits"]["hits"]]
+        result = self.es.search(index='dataset', body=query_body, explain=True)
+        results_number = result["hits"]["total"]["value"]
+        res = [Dataset(**elem["_source"]) for elem in result["hits"]["hits"]]
         return results_number, res
