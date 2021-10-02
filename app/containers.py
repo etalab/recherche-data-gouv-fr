@@ -9,6 +9,7 @@ class Container(containers.DeclarativeContainer):
     search_client = providers.Singleton(
         ElasticClient,
         url=config.elasticsearch_url,
+        search_dataset_fields=config.search_dataset_fields,
         search_dataset_featured_weight=config.search_dataset_featured_weight,
         search_dataset_certified_weight=config.search_dataset_certified_weight
     )

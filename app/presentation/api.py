@@ -23,7 +23,6 @@ def datasets_search(dataset_service: DatasetService = Provide[Container.dataset_
 
     return jsonify({
         "data": results,
-        "facets": {},
         "next_page": next_url if page < total_pages else None,
         "page": page,
         "previous_page": prev_url if page > 1 else None,
