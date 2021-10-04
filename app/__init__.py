@@ -7,7 +7,7 @@ from app.presentation import seed, routes, api
 
 def create_app(config: object = Config) -> Flask:
     container = Container()
-    container.wire(modules=[routes, seed])
+    container.wire(modules=[api, routes, seed])
 
     app: Flask = Flask(__name__)
     app.container = container
