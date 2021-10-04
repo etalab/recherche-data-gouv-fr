@@ -1,4 +1,5 @@
 from flask import Flask
+from whitenoise import WhiteNoise
 from app.config import Config
 from app.containers import Container
 from app.presentation import seed, routes, api
@@ -23,5 +24,7 @@ def create_app(config: object = Config) -> Flask:
 
     app.register_blueprint(routes.bp)
     app.register_blueprint(api.bp)
+
+    app.wsgi_app = WhiteNoise(app.wsgi_app, root='app/static/')
 
     return app
