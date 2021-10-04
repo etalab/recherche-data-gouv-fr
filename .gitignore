@@ -69,7 +69,7 @@ coverage.xml
 # Force .gitignore files
 !.gitignore
 .noseids
-Procfile
+
 
 # Local data directory
 data
