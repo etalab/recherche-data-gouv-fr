@@ -2,6 +2,7 @@ import pytest
 from app import create_app
 from app.config import Testing
 from app.domain.entities import Dataset
+from app.domain.interfaces import SearchClient
 
 
 @pytest.fixture
@@ -26,3 +27,21 @@ def single_dataset():
         description='test-dataset-description',
         featured=True
     )
+
+
+@pytest.fixture
+def search_client(single_dataset):
+    class TestSearchClient(SearchClient):
+        def clean_index(self, index):
+            pass
+
+        def index_dataset(self, to_index):
+            pass
+
+        def query_datasets(self, query_text, offset, page_size):
+            return 3, [single_dataset, single_dataset, single_dataset]
+
+        def find_one(self, dataset_id):
+            return single_dataset
+
+    return TestSearchClient()
