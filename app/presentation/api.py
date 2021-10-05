@@ -36,5 +36,5 @@ def datasets_search(dataset_service: DatasetService = Provide[Container.dataset_
 def get_dataset(dataset_remote_id: str, dataset_service: DatasetService = Provide[Container.dataset_service]) -> Response:
     result = dataset_service.find_one(dataset_remote_id)
     if result:
-        return jsonify({"data": result})
+        return jsonify(result)
     abort(404)

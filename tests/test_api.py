@@ -25,7 +25,7 @@ def test_get_dataset(app, client, single_dataset):
         response = client.get('api/1/datasets/testid/')
 
     assert response.status_code == 200
-    response_dataset = response.json['data']
+    response_dataset = response.json
     assert single_dataset.title == response_dataset['title']
     assert single_dataset.description == response_dataset['description']
     assert single_dataset.url == response_dataset['url']
