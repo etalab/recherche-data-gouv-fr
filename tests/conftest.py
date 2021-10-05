@@ -20,7 +20,7 @@ def client(app):
 @pytest.fixture
 def single_dataset():
     return Dataset(
-        remote_id='test-id',
+        id='test-id',
         title='test-dataset-title',
         url='http://local.dev',
         description='test-dataset-description',

@@ -16,15 +16,16 @@ def index(dataset_service: DatasetService = Provide[Container.dataset_service]) 
     results_number = 0
     total_pages = 0
     page = request.args.get('page', 1, type=int)
+    page_size = request.args.get('page_size', 20, type=int)
     query_text = request.args.get('query', None)
 
     if query_text:
-        results, results_number, total_pages = dataset_service.search(query_text, page)
+        results, results_number, total_pages = dataset_service.search(query_text, page, page_size)
 
-    first_url = url_for('main.index', query=query_text, page=1, _external=True)
-    next_url = url_for('main.index', query=query_text, page=page + 1, _external=True)
-    prev_url = url_for('main.index', query=query_text, page=page - 1, _external=True)
-    last_url = url_for('main.index', query=query_text, page=total_pages, _external=True)
+    first_url = url_for('main.index', query=query_text, page=1, page_size=page_size, _external=True)
+    next_url = url_for('main.index', query=query_text, page=page + 1, page_size=page_size, _external=True)
+    prev_url = url_for('main.index', query=query_text, page=page - 1, page_size=page_size, _external=True)
+    last_url = url_for('main.index', query=query_text, page=total_pages, page_size=page_size, _external=True)
 
     return render_template('index.html',
                            form=form,

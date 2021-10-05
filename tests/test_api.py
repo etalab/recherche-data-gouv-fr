@@ -13,7 +13,7 @@ def test_search(app, client, single_dataset):
     assert single_dataset.title == response_dataset['title']
     assert single_dataset.description == response_dataset['description']
     assert single_dataset.url == response_dataset['url']
-    assert single_dataset.remote_id == response_dataset['remote_id']
+    assert single_dataset.id == response_dataset['id']
     assert single_dataset.featured == response_dataset['featured']
 
 
@@ -29,5 +29,5 @@ def test_get_dataset(app, client, single_dataset):
     assert single_dataset.title == response_dataset['title']
     assert single_dataset.description == response_dataset['description']
     assert single_dataset.url == response_dataset['url']
-    assert single_dataset.remote_id == response_dataset['remote_id']
+    assert single_dataset.id == response_dataset['id']
     assert single_dataset.featured == response_dataset['featured']
