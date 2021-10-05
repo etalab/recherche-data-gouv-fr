@@ -19,8 +19,7 @@ class Config:
     SEARCH_DATASET_CERTIFIED_WEIGHT = 1.2
 
 
-class Testing:
+class Testing(Config):
     TESTING = True
     WTF_CSRF_ENABLED = False
     ELASTICSEARCH_URL = 'http://localhost:9200'
-    DATASETS_PER_PAGE = 20

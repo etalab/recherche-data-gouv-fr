@@ -1,5 +1,5 @@
 from dataclasses import asdict
-from typing import Tuple
+from typing import Tuple, Optional
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError
 from app.domain.entities import Dataset
@@ -68,3 +68,18 @@ class ElasticClient(SearchClient):
         results_number = result["hits"]["total"]["value"]
         res = [Dataset(**elem["_source"]) for elem in result["hits"]["hits"]]
         return results_number, res
+
+    def find_one(self, dataset_id: str) -> Optional[Dataset]:
+        query_body = {
+            "query": {
+                "term": {
+                    "remote_id": {
+                        "value": dataset_id
+                    }
+                }
+            }
+        }
+        result = self.es.search(index='datasets', body=query_body, explain=True)
+        if result['hits']['hits']:
+            return Dataset(**result['hits']['hits'][0]['_source'])
+        return None

@@ -30,23 +30,11 @@ def datasets_search(dataset_service: DatasetService = Provide[Container.dataset_
         "total": results_number
     })
 
-#
-# @bp.route("/datasets/<dataset_remote_id>/", methods=["GET"])
-# def get_dataset(dataset_remote_id: str) -> Response:
-#
-#     query_body: dict = {
-#         "query": {
-#             "term": {
-#                 "remote_id": {
-#                     "value": dataset_remote_id
-#                 }
-#             }
-#         }
-#     }
-#     result: dict = es.search(index='datasets', body=query_body, explain=True)
-#     if result['hits']['hits']:
-#         return jsonify({
-#             "id": result['hits']['hits'][0]['_source']['remote_id'],
-#             "title": result['hits']['hits'][0]['_source']['title']
-#         })
-#     return jsonify({})
+
+@bp.route("/datasets/<dataset_remote_id>/", methods=["GET"])
+@inject
+def get_dataset(dataset_remote_id: str, dataset_service: DatasetService = Provide[Container.dataset_service]) -> Response:
+    result = dataset_service.find_one(dataset_remote_id)
+    if result:
+        return jsonify({"data": result})
+    abort(404)

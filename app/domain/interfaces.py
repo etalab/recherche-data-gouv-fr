@@ -16,3 +16,7 @@ class SearchClient(ABC):
     @abstractmethod
     def query_datasets(self, query_text: str, offset: int, page_size: int) -> Tuple[int, list[Dataset]]:
         pass
+
+    @abstractmethod
+    def find_one(self, dataset_id: str) -> Dataset:
+        pass
