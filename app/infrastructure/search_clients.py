@@ -27,7 +27,7 @@ class ElasticClient(SearchClient):
             pass
 
     def index_dataset(self, to_index: Dataset) -> None:
-        self.es.index(index='dataset', body=asdict(to_index))
+        self.es.index(index='dataset',  id=to_index.id, body=asdict(to_index))
 
     def query_datasets(self, query_text: str, offset: int, page_size: int) -> Tuple[int, list[Dataset]]:
         query_body: dict = {
@@ -73,13 +73,13 @@ class ElasticClient(SearchClient):
         query_body = {
             "query": {
                 "term": {
-                    "remote_id": {
+                    "id": {
                         "value": dataset_id
                     }
                 }
             }
         }
-        result = self.es.search(index='datasets', body=query_body, explain=True)
+        result = self.es.search(index='dataset', body=query_body, explain=True)
         if result['hits']['hits']:
             return Dataset(**result['hits']['hits'][0]['_source'])
         return None

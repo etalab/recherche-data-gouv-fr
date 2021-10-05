@@ -28,7 +28,7 @@ def seed_db(search_client: SearchClient = Provide[Container.search_client]) -> N
         with click.progressbar(dataset_rows) as bar:
             for dataset in bar:
                 body = {
-                    'remote_id': dataset['id'],
+                    'id': dataset['id'],
                     'title': dataset['title'],
                     'url': dataset['url'],
                     'description': dataset['description'],

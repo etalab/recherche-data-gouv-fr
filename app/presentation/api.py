@@ -31,10 +31,10 @@ def datasets_search(dataset_service: DatasetService = Provide[Container.dataset_
     })
 
 
-@bp.route("/datasets/<dataset_remote_id>/", methods=["GET"])
+@bp.route("/datasets/<dataset_id>/", methods=["GET"])
 @inject
-def get_dataset(dataset_remote_id: str, dataset_service: DatasetService = Provide[Container.dataset_service]) -> Response:
-    result = dataset_service.find_one(dataset_remote_id)
+def get_dataset(dataset_id: str, dataset_service: DatasetService = Provide[Container.dataset_service]) -> Response:
+    result = dataset_service.find_one(dataset_id)
     if result:
         return jsonify(result)
-    abort(404)
+    abort(404, 'dataset not found')

@@ -5,7 +5,7 @@ DEFAULT_ORG_NAME = 'Sans organisation'
 
 @dataclass
 class Dataset:
-    remote_id: str
+    id: str
     title: str
     url: str
     description: str

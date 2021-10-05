@@ -10,7 +10,7 @@ class DatasetService:
         self.dataset_page_size = dataset_page_size
 
     def feed(self, dataset: Dataset) -> None:
-        self.search_client.index(dataset, "dataset")
+        self.search_client.index_dataset(dataset)
 
     def search(self, search_text: str, page: int) -> Tuple[list[Dataset], int, int]:
         results: list[Dataset]
