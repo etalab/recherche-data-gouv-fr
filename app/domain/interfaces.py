@@ -6,7 +6,11 @@ from app.domain.entities import Dataset
 class SearchClient(ABC):
 
     @abstractmethod
-    def clean_index(self, index: str) -> None:
+    def delete_index(self) -> None:
+        pass
+
+    @abstractmethod
+    def create_index(self) -> None:
         pass
 
     @abstractmethod

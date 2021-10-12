@@ -17,7 +17,8 @@ def seed_db(search_client: SearchClient = Provide[Container.search_client]) -> N
 
     click.echo("Cleaning indices.")
 
-    search_client.clean_index('dataset')
+    search_client.delete_index()
+    search_client.create_index()
 
     click.echo("Downloading catalogs.")
 
