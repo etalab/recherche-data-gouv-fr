@@ -25,7 +25,15 @@ def single_dataset():
         title='test-dataset-title',
         url='http://local.dev',
         description='test-dataset-description',
-        featured=True
+        es_orga_sp=1,
+        es_orga_followers=1,
+        es_dataset_views=1,
+        es_dataset_followers=1,
+        es_dataset_featured=1,
+        es_concat_title_org='test-dataset-title orga',
+        logo='logo.png',
+        organization_id='orga-id',
+        organization='orga'
     )
 
 

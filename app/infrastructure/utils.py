@@ -1,6 +1,6 @@
+import ssl
 from urllib.request import urlopen
 from tempfile import _TemporaryFileWrapper
-import ssl
 
 
 def download_catalog(url: str, fd: _TemporaryFileWrapper) -> None:

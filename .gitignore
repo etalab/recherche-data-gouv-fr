@@ -34,7 +34,7 @@ js-built
 *.min.css
 *.min.js
 /instance/
-/static/
+/app/static/
 /doc/_build/
 /site/
 /node_modules/

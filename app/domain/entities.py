@@ -9,6 +9,12 @@ class Dataset:
     title: str
     url: str
     description: str
-    featured: bool
-    organization_name: str = DEFAULT_ORG_NAME
-    organization_badges: list[str] = field(default_factory=list)
+    es_orga_sp: int
+    es_orga_followers: int
+    es_dataset_views: int
+    es_dataset_followers: int
+    es_dataset_featured: int
+    es_concat_title_org: str
+    logo: str
+    organization_id: str
+    organization: str = DEFAULT_ORG_NAME
