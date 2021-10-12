@@ -5,9 +5,9 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
 
     ELASTICSEARCH_ADDR = os.environ.get(
-        'DOKKU_ELASTICSEARCH_POC_RECHERCHE_INDEX_PORT_9200_TCP_ADDR') or 'localhost'
+        'DOKKU_ELASTICSEARCH_POC_RECHERCHE_PORT_9200_TCP_ADDR') or 'localhost'
     ELASTICSEARCH_PORT = os.environ.get(
-        'DOKKU_ELASTICSEARCH_POC_RECHERCHE_INDEX_PORT_9200_TCP_PORT') or '9200'
+        'DOKKU_ELASTICSEARCH_POC_RECHERCHE_PORT_9200_TCP_PORT') or '9200'
     ELASTICSEARCH_URL = f'http://{ELASTICSEARCH_ADDR}:{ELASTICSEARCH_PORT}'
 
     DATASET_CATALOG_URL = 'https://www.data.gouv.fr/fr/datasets/r/f868cca6-8da1-4369-a78d-47463f19a9a3'
