@@ -8,8 +8,9 @@ from app.domain.interfaces import SearchClient
 
 class ElasticClient(SearchClient):
 
-    def __init__(self, url: str):
+    def __init__(self, url: str, search_synonyms: list):
         self.es = Elasticsearch([url])
+        self.synonyms = search_synonyms
 
     def delete_index(self) -> None:
         try:
@@ -38,13 +39,7 @@ class ElasticClient(SearchClient):
                         "type": "synonym",
                         "ignore_case": True,
                         "expand": True,
-                        "synonyms": [
-                            "AMD, administrateur ministériel des données, AMDAC",
-                            "lolf, loi de finance",
-                            "waldec, RNA, répertoire national des associations",
-                            "ovq, baromètre des résultats",
-                            "contour, découpage"
-                        ]
+                        "synonyms": self.synonyms
                     },
                     "french_stemmer": {
                         "type": "stemmer",
@@ -82,23 +77,23 @@ class ElasticClient(SearchClient):
                     "type": "text",
                     "analyzer": "french_dgv"
                 },
-                "es_orga_sp": {
+                "orga_sp": {
                     "type": "integer"
                 },
-                "es_orga_followers": {
+                "orga_followers": {
                     "type": "integer"
                 },
-                "es_dataset_views": {
+                "dataset_views": {
                     "type": "integer"
                 },
-                "es_dataset_followers": {
+                "dataset_followers": {
                     "type": "integer"
                 },
-                "es_concat_title_org": {
+                "concat_title_org": {
                     "type": "text",
                     "analyzer": "french_dgv"
                 },
-                "es_dataset_featured": {
+                "dataset_featured": {
                     "type": "integer"
                 },
 
@@ -137,7 +132,7 @@ class ElasticClient(SearchClient):
                             "functions": [
                                 {
                                     "field_value_factor": {
-                                        "field": "es_orga_sp",
+                                        "field": "orga_sp",
                                         "factor": 8,
                                         "modifier": "sqrt",
                                         "missing": 1
@@ -145,7 +140,7 @@ class ElasticClient(SearchClient):
                                 },
                                 {
                                     "field_value_factor": {
-                                        "field": "es_dataset_views",
+                                        "field": "dataset_views",
                                         "factor": 4,
                                         "modifier": "sqrt",
                                         "missing": 1
@@ -153,7 +148,7 @@ class ElasticClient(SearchClient):
                                 },
                                 {
                                     "field_value_factor": {
-                                        "field": "es_dataset_followers",
+                                        "field": "dataset_followers",
                                         "factor": 4,
                                         "modifier": "sqrt",
                                         "missing": 1
@@ -161,7 +156,7 @@ class ElasticClient(SearchClient):
                                 },
                                 {
                                     "field_value_factor": {
-                                        "field": "es_orga_followers",
+                                        "field": "orga_followers",
                                         "factor": 1,
                                         "modifier": "sqrt",
                                         "missing": 1
@@ -169,7 +164,7 @@ class ElasticClient(SearchClient):
                                 },
                                 {
                                     "field_value_factor": {
-                                        "field": "es_dataset_featured",
+                                        "field": "dataset_featured",
                                         "factor": 1,
                                         "modifier": "sqrt",
                                         "missing": 1
@@ -185,7 +180,7 @@ class ElasticClient(SearchClient):
                                         "must": [
                                             {
                                                 "match": {
-                                                    "es_concat_title_org": {
+                                                    "concat_title_org": {
                                                         "query": query_text,
                                                         "operator": "and",
                                                         "boost": 8
@@ -198,7 +193,7 @@ class ElasticClient(SearchClient):
                                 "functions": [
                                     {
                                         "field_value_factor": {
-                                            "field": "es_orga_sp",
+                                            "field": "orga_sp",
                                             "factor": 8,
                                             "modifier": "sqrt",
                                             "missing": 1
@@ -206,7 +201,7 @@ class ElasticClient(SearchClient):
                                     },
                                     {
                                         "field_value_factor": {
-                                            "field": "es_dataset_views",
+                                            "field": "dataset_views",
                                             "factor": 4,
                                             "modifier": "sqrt",
                                             "missing": 1
@@ -214,7 +209,7 @@ class ElasticClient(SearchClient):
                                     },
                                     {
                                         "field_value_factor": {
-                                            "field": "es_dataset_followers",
+                                            "field": "dataset_followers",
                                             "factor": 4,
                                             "modifier": "sqrt",
                                             "missing": 1
@@ -222,7 +217,7 @@ class ElasticClient(SearchClient):
                                     },
                                     {
                                         "field_value_factor": {
-                                            "field": "es_orga_followers",
+                                            "field": "orga_followers",
                                             "factor": 1,
                                             "modifier": "sqrt",
                                             "missing": 1
@@ -230,7 +225,7 @@ class ElasticClient(SearchClient):
                                     },
                                     {
                                         "field_value_factor": {
-                                            "field": "es_dataset_featured",
+                                            "field": "dataset_featured",
                                             "factor": 1,
                                             "modifier": "sqrt",
                                             "missing": 1

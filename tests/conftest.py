@@ -25,13 +25,19 @@ def single_dataset():
         title='test-dataset-title',
         url='http://local.dev',
         description='test-dataset-description',
-        es_orga_sp=1,
-        es_orga_followers=1,
-        es_dataset_views=1,
-        es_dataset_followers=1,
-        es_dataset_featured=1,
-        es_concat_title_org='test-dataset-title orga',
-        logo='logo.png',
+        orga_sp=1,
+        orga_followers=1,
+        dataset_views=1,
+        dataset_followers=1,
+        dataset_reuses=0,
+        dataset_featured=1,
+        temporal_coverage_start='',
+        temporal_coverage_end='',
+        spatial_granularity='',
+        spatial_zones='',
+        dataset_resources=0,
+        concat_title_org='test-dataset-title orga',
+        organization_logo='logo.png',
         organization_id='orga-id',
         organization='orga'
     )
@@ -40,7 +46,10 @@ def single_dataset():
 @pytest.fixture
 def search_client(single_dataset):
     class TestSearchClient(SearchClient):
-        def clean_index(self, index):
+        def delete_index(self):
+            pass
+
+        def create_index(self) -> None:
             pass
 
         def index_dataset(self, to_index):

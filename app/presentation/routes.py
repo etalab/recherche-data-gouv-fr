@@ -21,6 +21,7 @@ def index(dataset_service: DatasetService = Provide[Container.dataset_service]) 
 
     if query_text:
         results, results_number, total_pages = dataset_service.search(query_text, page, page_size)
+        form.query.data = query_text
 
     first_url = url_for('main.index', query=query_text, page=1, page_size=page_size, _external=True)
     next_url = url_for('main.index', query=query_text, page=page + 1, page_size=page_size, _external=True)

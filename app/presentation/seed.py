@@ -37,13 +37,17 @@ def seed_db(search_client: SearchClient = Provide[Container.search_client]) -> N
 
         # Récupèration de l'information "service public" depuis la colonne badge.
         # Attribution de la valeur 4 si c'est un SP, 1 si ça ne l'est pas
-        dfo['es_orga_sp'] = dfo['badges'].apply(lambda x: 4 if 'public-service' in x else 1)
+        dfo['orga_sp'] = dfo['badges'].apply(lambda x: 4 if 'public-service' in x else 1)
 
         # Sauvegarde en mémoire du dataframe avec uniquement les infos pertinentes
-        dfo = dfo[['logo', 'id', 'es_orga_sp', 'metric.followers']]
+        dfo = dfo[['logo', 'id', 'orga_sp', 'metric.followers']]
 
         # Renommage de l'id de l'organisation et de la métrique followers
-        dfo = dfo.rename(columns={'id': 'organization_id', 'metric.followers': 'es_orga_followers'})
+        dfo = dfo.rename(columns={
+            'id': 'organization_id',
+            'metric.followers': 'orga_followers',
+            'logo': 'organization_logo'
+        })
 
         # Merge des deux dataframes (dataset et orga) pour n'en garder qu'un seul unique
         # La colonne de jointure est l'id de l'organisation. On fait un merge de type left join
@@ -54,7 +58,7 @@ def seed_db(search_client: SearchClient = Provide[Container.search_client]) -> N
         # (elles étaient préalablement des string)
         df['metric.views'] = df['metric.views'].astype(float)
         df['metric.followers'] = df['metric.followers'].astype(float)
-        df['es_orga_followers'] = df['es_orga_followers'].astype(float)
+        df['orga_followers'] = df['orga_followers'].astype(float)
 
         # Afin qu'une métrique ne soit pas plus d'influente que l'autre, on normalise chacune des valeurs de ces colonnes
         # dans 5 catégorie (de 1 à 5)
@@ -67,21 +71,48 @@ def seed_db(search_client: SearchClient = Provide[Container.search_client]) -> N
         # Datasets entre 500 et 4999 vues = Valeur 4
         # Datasets entre 5000 et 'nombre de vues max d'un dataset' = Valeur 5
         mvbins = [-1, 0, 50, 500, 5000, df['metric.views'].max()]
-        df['es_dataset_views'] = pd.cut(df['metric.views'], mvbins, labels=list(range(1,6)))
+        df['dataset_views'] = pd.cut(df['metric.views'], mvbins, labels=list(range(1, 6)))
         mfbins = [-1, 0, 2, 10, 40, df['metric.followers'].max()]
-        df['es_dataset_followers'] = pd.cut(df['metric.followers'], mfbins, labels=list(range(1,6)))
-        fobins = [-1, 0, 10, 50, 100, df['es_orga_followers'].max()]
-        df['es_orga_followers'] = pd.cut(df['es_orga_followers'], fobins, labels=list(range(1,6)))
+        df['dataset_followers'] = pd.cut(df['metric.followers'], mfbins, labels=list(range(1, 6)))
+        fobins = [-1, 0, 10, 50, 100, df['orga_followers'].max()]
+        df['orga_followers'] = pd.cut(df['orga_followers'], fobins, labels=list(range(1, 6)))
 
         # Création d'un champs "es_concat_title_org" concatenant le nom du titre et de l'organisation (de nombreuses recherches concatènent ces deux types de données)
-        df['es_concat_title_org'] = df['title'] + ' ' + df['organization']
+        df['concat_title_org'] = df['title'] + ' ' + df['organization']
 
         # Création d'un champ "es_dataset_featured" se basant sur la colonne features. L'objectif étant de donner un poids plus grand aux datasets featured
         # Poids de 5 quand le dataset est featured, 1 sinon
-        df['es_dataset_featured'] = df['featured'].apply(lambda x: 5 if x == 'True' else 1)
+        df['dataset_featured'] = df['featured'].apply(lambda x: 5 if x == 'True' else 1)
 
+        # Renommage de l'id de l'organisation et de la métrique followers
+        df = df.rename(columns={
+            'temporal_coverage.start': 'temporal_coverage_start',
+            'temporal_coverage.end': 'temporal_coverage_end',
+            'spatial.granularity': 'spatial_granularity',
+            'spatial.zones': 'spatial_zones',
+            'metric.reuses': 'dataset_reuses'
+        })
         # Sauvegarde en mémoire du dataframe avec uniquement les infos pertinentes
-        df = df[['id', 'title', 'url', 'organization', 'organization_id', 'description', 'logo', 'es_orga_sp', 'es_orga_followers', 'es_dataset_views', 'es_dataset_followers', 'es_concat_title_org', 'es_dataset_featured']]
+        df = df[[
+            'id',
+            'title',
+            'url',
+            'organization',
+            'organization_id',
+            'description',
+            'organization_logo',
+            'orga_sp',
+            'orga_followers',
+            'dataset_views',
+            'dataset_followers',
+            'concat_title_org',
+            'dataset_featured',
+            'temporal_coverage_start',
+            'temporal_coverage_end',
+            'spatial_granularity',
+            'spatial_zones',
+            'dataset_reuses'
+        ]]
         # Convertion du dataframe en string json séparée par des \n
         df_as_json = df.to_json(orient='records', lines=True)
 
