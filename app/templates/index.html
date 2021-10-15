@@ -82,7 +82,7 @@
                 <div class="card-data">
                     <h3 class="card-title">{{ result.title }}</h3>
                     <div class="card-description text-grey-300 fr-mt-1w break-words">
-                        {{ result.description }}
+                        {{ result.description|truncate(300) }}
                     </div>
                 </div>
 
