@@ -131,19 +131,37 @@
     {% if next_url or prev_url %}
     <nav role="navigation" class="fr-pagination" aria-label="Pagination">
         <ul class="fr-pagination__list justify-center">
-            <li>
-                <a class="fr-pagination__link fr-pagination__link--first" href="{{ first_url or '#' }}">
-                    Première page
-                </a>
-            </li>
+            {% if page > 1 %}
             <li>
                 <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" href="{{ prev_url or '#' }}">
                     Page précédente
                 </a>
             </li>
             <li>
+                <a class="fr-pagination__link" href="{{ first_url }}" title="first_page">
+                    1
+                </a>
+            </li>
+            <li>
+                <a class="fr-pagination__link fr-displayed-lg">
+                    …
+                </a>
+            </li>
+            {% endif %}
+            <li>
                 <a class="fr-pagination__link" aria-current="page" title="Page">
                     {{ page }}
+                </a>
+            </li>
+            {% if page < total_pages %}
+            <li>
+                <a class="fr-pagination__link fr-displayed-lg">
+                    …
+                </a>
+            </li>
+            <li>
+                <a class="fr-pagination__link" href="{{ last_url }}" title="total_pages">
+                    {{ total_pages }}
                 </a>
             </li>
             <li>
@@ -151,11 +169,7 @@
                     Page suivante
                 </a>
             </li>
-            <li>
-                <a class="fr-pagination__link fr-pagination__link--last" href="{{ last_url }}">
-                    Dernière page
-                </a>
-            </li>
+            {% endif %}
         </ul>
     </nav>
     {% endif %}
