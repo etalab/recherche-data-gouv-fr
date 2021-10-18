@@ -37,7 +37,7 @@
         </div>
     </div>
 </header>
-<main class="fr-container">
+<main class="flex-1 fr-container">
     <div class="mt-16">
         <form action="" method="get" novalidate>
             {{ form.hidden_tag() }}
@@ -81,8 +81,8 @@
                 {% endif %}
                 <div class="card-data">
                     <h3 class="card-title">{{ result.title }}</h3>
-                    <div class="card-description text-grey-300 fr-mt-1w">
-                        {{ result.description }}
+                    <div class="card-description text-grey-300 fr-mt-1w break-words">
+                        {{ result.description|truncate(300) }}
                     </div>
                 </div>
 
