@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 DEFAULT_ORG_NAME = 'Sans organisation'
 DEFAULT_ORG_LOGO = 'https://static.data.gouv.fr/_themes/gouvfr/img/placeholders/organization.png?_=1.0.0'
-DEFAULT_DESCRIPTION = 'Aucune déscription'
+DEFAULT_DESCRIPTION = 'Aucune description'
 
 
 @dataclass
@@ -22,7 +22,11 @@ class Dataset:
     temporal_coverage_end: str
     spatial_granularity: str
     spatial_zones: str
+    description: str
     dataset_resources: int = 0
-    description: str = DEFAULT_DESCRIPTION
     organization_logo: str = DEFAULT_ORG_LOGO
     organization: str = DEFAULT_ORG_NAME
+
+    def __post_init__(self):
+        if self.description is None:
+            self.description = DEFAULT_DESCRIPTION

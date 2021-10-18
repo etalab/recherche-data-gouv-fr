@@ -2,7 +2,7 @@ from flask import Flask
 from whitenoise import WhiteNoise
 from app.config import Config
 from app.containers import Container
-from app.presentation import seed, routes, api
+from app.presentation import seed, routes, api, markdown
 
 
 def create_app(config: object = Config) -> Flask:
@@ -18,6 +18,7 @@ def create_app(config: object = Config) -> Flask:
 
     # register the database command
     seed.init_app(app)
+    markdown.init_app(app)
 
     app.register_blueprint(routes.bp)
     app.register_blueprint(api.bp)
