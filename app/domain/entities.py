@@ -16,6 +16,7 @@ class Dataset:
     dataset_followers: int
     dataset_reuses: int
     dataset_featured: int
+    resources_count: int
     concat_title_org: str
     organization_id: str
     temporal_coverage_start: str

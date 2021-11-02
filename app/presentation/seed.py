@@ -92,6 +92,10 @@ def seed_db(search_client: SearchClient = Provide[Container.search_client]) -> N
             'spatial.zones': 'spatial_zones',
             'metric.reuses': 'dataset_reuses'
         })
+
+        # Suppresion des jeux de données archivés ou privés
+        df = df[df.archived == 'False']
+
         # Sauvegarde en mémoire du dataframe avec uniquement les infos pertinentes
         df = df[[
             'id',
@@ -105,6 +109,7 @@ def seed_db(search_client: SearchClient = Provide[Container.search_client]) -> N
             'orga_followers',
             'dataset_views',
             'dataset_followers',
+            'resources_count',
             'concat_title_org',
             'dataset_featured',
             'temporal_coverage_start',

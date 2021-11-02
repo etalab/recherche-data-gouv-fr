@@ -23,6 +23,7 @@ class Config:
     # ]
     # SEARCH_DATASET_FEATURED_WEIGHT = 3
     # SEARCH_DATASET_CERTIFIED_WEIGHT = 1.2
+
     SEARCH_SYNONYMS = [
         "AMD, administrateur ministériel des données, AMDAC",
         "lolf, loi de finance",

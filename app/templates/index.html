@@ -112,11 +112,9 @@
 
                 </dl>
                 <ul class="card-footer">
-                    {% if result.resources %}
                     <li>
-                        <strong>{{ result.dataset_resources or 0 }}</strong> ressources
+                        <strong>{{ result.resources_count or 0 }}</strong> ressources
                     </li>
-                    {% endif %}
                     <li>
                         <strong>{{ result.dataset_reuses or 0 }}</strong> réutilisations
                     </li>
