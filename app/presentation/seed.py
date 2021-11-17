@@ -128,7 +128,8 @@ def seed_db(search_client: SearchClient = Provide[Container.search_client]) -> N
                 if json_document != '':
                     # Convertion de la string json en dictionnaire
                     jdict = json.loads(json_document)
-                    search_client.index_dataset(Dataset(**jdict))
+                    if jdict['resources_count'] != '0':
+                        search_client.index_dataset(Dataset(**jdict))
 
         click.echo("Done.")
 

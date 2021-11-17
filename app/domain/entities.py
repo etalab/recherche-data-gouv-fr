@@ -1,11 +1,11 @@
-from dataclasses import dataclass
+import dataclasses
 
 DEFAULT_ORG_NAME = 'Sans organisation'
 DEFAULT_ORG_LOGO = 'https://static.data.gouv.fr/_themes/gouvfr/img/placeholders/organization.png?_=1.0.0'
 DEFAULT_DESCRIPTION = 'Aucune description'
 
 
-@dataclass
+@dataclasses.dataclass
 class Dataset:
     id: str
     title: str
@@ -31,3 +31,9 @@ class Dataset:
     def __post_init__(self):
         if self.description is None:
             self.description = DEFAULT_DESCRIPTION
+        # for field in dataclasses.fields(self):
+        #     value = getattr(self, field.name)
+        #     if not isinstance(value, field.type):
+        #         raise ValueError(f'Expected {field.name} to be {field.type}, '
+        #                         f'got {repr(value)}')
+        #         setattr(self, field.name, field.type(value))
