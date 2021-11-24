@@ -13,6 +13,12 @@
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
 
     <title>Recherche - DGF</title>
+    <style>
+    html *
+    {
+        font-family: Marianne;
+    }
+    </style>
 </head>
 <body class="flex flex-col min-h-screen">
 <header role="banner" class="fr-header">
@@ -37,6 +43,27 @@
         </div>
     </div>
 </header>
+<div class="fr-follow">
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
+                <div class="fr-follow__newsletter">
+                    <div>
+                        <h5 class="fr-h5 fr-follow__title">Bienvenue sur le prototype du nouveau moteur de recherche de data.gouv.fr</h5>
+                        <p class="fr-text--sm fr-follow__desc">Ce site a pour vocation de vous permettre de tester un nouvel algorithme de recherche.</p>
+                    </div>
+                    <div>
+                        <button class="fr-btn" title="S‘abonner à notre lettre d’information" type="button">
+                            <a href="https://app.evalandgo.com/s/index.php?id=JTk5ayU5NmslOTYlQjA%3D&a=JTk3cCU5M2glOTklQUU%3D">
+                                Dites-nous ce que vous en avez pensé
+                            </a>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <main class="flex-1 fr-container">
     <div class="mt-16">
         <form action="" method="get" novalidate>

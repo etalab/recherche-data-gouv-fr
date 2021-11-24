@@ -78,7 +78,7 @@ def seed_db(search_client: SearchClient = Provide[Container.search_client]) -> N
         df['orga_followers'] = pd.cut(df['orga_followers'], fobins, labels=list(range(1, 6)))
 
         # Création d'un champs "es_concat_title_org" concatenant le nom du titre et de l'organisation (de nombreuses recherches concatènent ces deux types de données)
-        df['concat_title_org'] = df['title'] + ' ' + df['organization']
+        df['concat_title_org'] = df['title'] + ' ' + df['acronym'] + ' ' + df['organization']
 
         # Création d'un champ "es_dataset_featured" se basant sur la colonne features. L'objectif étant de donner un poids plus grand aux datasets featured
         # Poids de 5 quand le dataset est featured, 1 sinon
@@ -101,6 +101,7 @@ def seed_db(search_client: SearchClient = Provide[Container.search_client]) -> N
             'id',
             'title',
             'url',
+            'acronym',
             'organization',
             'organization_id',
             'description',

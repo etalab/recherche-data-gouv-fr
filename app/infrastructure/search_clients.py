@@ -69,6 +69,9 @@ class ElasticClient(SearchClient):
                     "type": "text",
                     "analyzer": "french_dgv"
                 },
+                "acronym": {
+                    "type": "text"
+                },
                 "description": {
                     "type": "text",
                     "analyzer": "french_dgv"
@@ -121,6 +124,7 @@ class ElasticClient(SearchClient):
                                                 "type": "phrase",
                                                 "fields": [
                                                     "title^15",
+                                                    "acronym^15",
                                                     "description^8",
                                                     "organization^8"
                                                 ]

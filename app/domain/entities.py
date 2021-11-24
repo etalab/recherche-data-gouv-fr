@@ -9,6 +9,7 @@ DEFAULT_DESCRIPTION = 'Aucune description'
 class Dataset:
     id: str
     title: str
+    acronym: str
     url: str
     orga_sp: int
     orga_followers: int
