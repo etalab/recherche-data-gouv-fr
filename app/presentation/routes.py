@@ -17,8 +17,15 @@ def index(dataset_service: DatasetService = Provide[Container.dataset_service]) 
     page_size = request.args.get('page_size', 20, type=int)
     query_text = request.args.get('query', None)
 
-    if query_text:
+    if query_text and query_text.strip():
         results, results_number, total_pages = dataset_service.search(query_text, page, page_size)
+
+    # This is an HTMX request
+    if 'HX-Request' in request.headers:
+        return render_template(
+            'partials/results.html',
+            results=results, results_number=results_number, total_pages=total_pages
+        )
 
     first_url = url_for('main.index', query=query_text, page=1, page_size=page_size, _external=True)
     next_url = url_for('main.index', query=query_text, page=page + 1, page_size=page_size, _external=True)
