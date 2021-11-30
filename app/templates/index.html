@@ -66,14 +66,10 @@
 </div>
 <main class="flex-1 fr-container">
     <div class="mt-16">
-        <form action="" method="get" novalidate>
-            {{ form.hidden_tag() }}
+        <form action="" method="GET">
             <div class="fr-search-bar" id="header-search" role="search">
-                {{ form.query.label(class_="fr-label") }}
-                {{ form.query }}
-                {% for error in form.query.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-                {% endfor %}
+                <label class="fr-label" for="query">Rechercher</label>
+                <input class="fr-input" id="query" name="query" placeholder="Rechercher" required="" type="search" value="{{ query_text }}">
                 <button class="fr-btn" title="Rechercher" type="submit">
                     Rechercher
                 </button>
@@ -229,6 +225,7 @@
         </div>
     </div>
 </footer>
+<script src="{{url_for('static', filename='js/htmx/htmx.min.js')}}"></script>
 <script type="text/javascript" nomodule src="{{url_for('static', filename='js/dsfr.nomodule.min.js')}}"></script>
 </body>
 </html>
