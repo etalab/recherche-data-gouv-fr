@@ -85,58 +85,21 @@
             </div>
         </form>
     </div>
-    <div class="mt-16" id="search-results">
-    {% if query_text %}
-        {{ render_partial('partials/results.html', results=results, results_number=results_number, total_pages=total_pages) }}
-    {% endif %}
+    <div id="search-results">
+        {% if query_text %}
+        {{ render_partial(
+            'partials/results.html',
+            results=results,
+            results_number=results_number,
+            total_pages=total_pages,
+            page=page,
+            first_url=first_url,
+            next_url=next_url,
+            prev_url=prev_url,
+            last_url=last_url,
+        ) }}
+        {% endif %}
     </div>
-
-    {% if next_url or prev_url %}
-    <nav role="navigation" class="fr-pagination" aria-label="Pagination">
-        <ul class="fr-pagination__list justify-center">
-            {% if page > 1 %}
-            <li>
-                <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" href="{{ prev_url or '#' }}">
-                    Page précédente
-                </a>
-            </li>
-            <li>
-                <a class="fr-pagination__link" href="{{ first_url }}" title="first_page">
-                    1
-                </a>
-            </li>
-            <li>
-                <a class="fr-pagination__link fr-displayed-lg">
-                    …
-                </a>
-            </li>
-            {% endif %}
-            <li>
-                <a class="fr-pagination__link" aria-current="page" title="Page">
-                    {{ page }}
-                </a>
-            </li>
-            {% if page < total_pages %}
-            <li>
-                <a class="fr-pagination__link fr-displayed-lg">
-                    …
-                </a>
-            </li>
-            <li>
-                <a class="fr-pagination__link" href="{{ last_url }}" title="total_pages">
-                    {{ total_pages }}
-                </a>
-            </li>
-            <li>
-                <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" href="{{ next_url }}">
-                    Page suivante
-                </a>
-            </li>
-            {% endif %}
-        </ul>
-    </nav>
-    {% endif %}
-
 </main>
 <footer class="fr-footer" role="contentinfo" id="footer">
     <div class="fr-container">
