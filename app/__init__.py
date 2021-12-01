@@ -1,3 +1,5 @@
+import jinja_partials
+
 from flask import Flask
 from whitenoise import WhiteNoise
 from app.config import Config
@@ -24,5 +26,7 @@ def create_app(config: object = Config) -> Flask:
     app.register_blueprint(api.bp)
 
     app.wsgi_app = WhiteNoise(app.wsgi_app, root='app/static/')
+
+    jinja_partials.register_extensions(app)
 
     return app

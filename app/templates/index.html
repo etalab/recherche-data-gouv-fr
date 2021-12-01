@@ -66,138 +66,40 @@
 </div>
 <main class="flex-1 fr-container">
     <div class="mt-16">
-        <form action="" method="get" novalidate>
-            {{ form.hidden_tag() }}
+        <form action="" method="GET">
             <div class="fr-search-bar" id="header-search" role="search">
-                {{ form.query.label(class_="fr-label") }}
-                {{ form.query }}
-                {% for error in form.query.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-                {% endfor %}
+                <label class="fr-label" for="query">Rechercher</label>
+                <input type="search" id="query" name="query"
+                       placeholder="Rechercher"
+                       class="fr-input"
+                       hx-get="/"
+                       hx-trigger="keyup changed delay:250ms"
+                       hx-target="#search-results"
+                       hx-push-url="true"
+                       value="{{ '' if not query_text else query_text }}"
+                       required
+                >
                 <button class="fr-btn" title="Rechercher" type="submit">
                     Rechercher
                 </button>
             </div>
         </form>
     </div>
-    <div class="mt-16">
-        {% if results %}
-        <h2>{{results_number}} résultats sur {{total_pages}} pages</h2>
+    <div id="search-results">
+        {% if query_text %}
+        {{ render_partial(
+            'partials/results.html',
+            results=results,
+            results_number=results_number,
+            total_pages=total_pages,
+            page=page,
+            first_url=first_url,
+            next_url=next_url,
+            prev_url=prev_url,
+            last_url=last_url,
+        ) }}
         {% endif %}
-        {% for result in results %}
-        <a href="{{ result.url }}" title="{{ result.title }}"
-           class="unstyled w-100">
-            <article class="dataset-card dataset-search-result py-xs">
-                {% if result.organization_logo %}
-                <div class="card-logo">
-                    <img alt="{{ result.organization_name if result.organization_logo else '' }}"
-                         src="{{ result.organization_logo }}">
-                    <div class="logo-badge">
-                        {% if result.orga_sp == 4 %}
-                        <span class="certified"
-                              title="L'identité de ce service public est certifié par data.gouv.fr">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="17.5" height="23.5" viewBox="0 0 35 47"><g><g><path fill="#198cf2" d="M33.976 41.31l-7.34-1.28-3.046 6.797-9.196-17.31L24.78 24z"/></g><g><path fill="#198cf2" d="M.02 41.31l7.339-1.28 3.047 6.797 9.195-17.31L9.216 24z"/></g><g><path fill="#fff" d="M33.976 17.807c0 9.029-7.32 16.349-16.35 16.349-9.03 0-16.348-7.32-16.348-16.35 0-9.03 7.319-16.35 16.349-16.35 9.029 0 16.349 7.32 16.349 16.35z"/></g><g><path fill="#198cf2" d="M.536 17.806C.536 8.384 8.204.717 17.627.717c9.424 0 17.09 7.667 17.09 17.09 0 9.422-7.666 17.09-17.09 17.09S.536 27.228.536 17.806zm1.482 0c0 8.608 7.002 15.61 15.609 15.61 8.606 0 15.609-7.002 15.609-15.61 0-8.607-7.003-15.608-15.61-15.608C9.02 2.198 2.018 9.2 2.018 17.806z"/></g><g><path fill="#198cf2" d="M30.831 17.807c0 7.293-5.912 13.205-13.205 13.205S4.421 25.1 4.421 17.807 10.334 4.6 17.627 4.6c7.293 0 13.205 5.913 13.205 13.206z"/></g><g><path fill="#fff" d="M16.2 24.124c-.377 0-.756-.144-1.044-.431l-4.862-4.836a1.481 1.481 0 1 1 2.09-2.1l4.86 4.835a1.48 1.48 0 0 1-1.044 2.532z"/></g><g><path fill="#fff" d="M16.199 24.124a1.483 1.483 0 0 1-1.269-2.244l6.666-11.11a1.481 1.481 0 1 1 2.54 1.525l-6.665 11.11a1.481 1.481 0 0 1-1.272.719z"/></g></g></svg>
-                            </span>
-                        {% endif %}
-                    </div>
-                </div>
-                {% else %}
-                <div class="card-logo">
-                    <img src="https://static.data.gouv.fr/_themes/gouvfr/img/placeholders/organization.png?_=1.0.0" alt="">
-                </div>
-                {% endif %}
-                <div class="card-data">
-                    <h3 class="card-title">{{ result.title }}</h3>
-                    <div class="card-description text-grey-300 fr-mt-1w break-words">
-                        {{ result.description|mdstrip(300) }}
-                    </div>
-                </div>
-
-                <dl class="card-hover">
-                    {# Temporal coverage #}
-                    {% if result.temporal_coverage_start %}
-                    <div>
-                        <dt>Couverture temporelle</dt>
-                        <dd>{{ result.temporal_coverage_start }} - {{ result.temporal_coverage_end }}</dd>
-                    </div>
-                    {% endif %}
-
-                    {# Spatial coverage #}
-                    {% if result.spatial_zones %}
-                    <div>
-                        <dt>Couverture spatiale</dt>
-                        <dd>{{ result.spatial_zones }}</dd>
-                    </div>
-                    {% endif %}
-
-                    {% if result.spatial_granularity %}
-                    <div>
-                        <dt>Granularité de la couverture territoriale</dt>
-                        <dd>{{ result.spatial_granularity }}</dd>
-                    </div>
-                    {% endif %}
-
-                </dl>
-                <ul class="card-footer">
-                    <li>
-                        <strong>{{ result.resources_count or 0 }}</strong> ressources
-                    </li>
-                    <li>
-                        <strong>{{ result.dataset_reuses or 0 }}</strong> réutilisations
-                    </li>
-                    <li>
-                        <strong>{{ result.dataset_followers or 0 }}</strong> favoris
-                    </li>
-                </ul>
-            </article>
-        </a>
-        {% endfor %}
     </div>
-    {% if next_url or prev_url %}
-    <nav role="navigation" class="fr-pagination" aria-label="Pagination">
-        <ul class="fr-pagination__list justify-center">
-            {% if page > 1 %}
-            <li>
-                <a class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label" href="{{ prev_url or '#' }}">
-                    Page précédente
-                </a>
-            </li>
-            <li>
-                <a class="fr-pagination__link" href="{{ first_url }}" title="first_page">
-                    1
-                </a>
-            </li>
-            <li>
-                <a class="fr-pagination__link fr-displayed-lg">
-                    …
-                </a>
-            </li>
-            {% endif %}
-            <li>
-                <a class="fr-pagination__link" aria-current="page" title="Page">
-                    {{ page }}
-                </a>
-            </li>
-            {% if page < total_pages %}
-            <li>
-                <a class="fr-pagination__link fr-displayed-lg">
-                    …
-                </a>
-            </li>
-            <li>
-                <a class="fr-pagination__link" href="{{ last_url }}" title="total_pages">
-                    {{ total_pages }}
-                </a>
-            </li>
-            <li>
-                <a class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label" href="{{ next_url }}">
-                    Page suivante
-                </a>
-            </li>
-            {% endif %}
-        </ul>
-    </nav>
-    {% endif %}
 </main>
 <footer class="fr-footer" role="contentinfo" id="footer">
     <div class="fr-container">
@@ -229,6 +131,7 @@
         </div>
     </div>
 </footer>
+<script src="{{url_for('static', filename='js/htmx/htmx.min.js')}}"></script>
 <script type="text/javascript" nomodule src="{{url_for('static', filename='js/dsfr.nomodule.min.js')}}"></script>
 </body>
 </html>

@@ -32,9 +32,7 @@ bower
 js-built
 .DS_Store
 *.min.css
-*.min.js
 /instance/
-/app/static/
 /doc/_build/
 /site/
 /node_modules/
