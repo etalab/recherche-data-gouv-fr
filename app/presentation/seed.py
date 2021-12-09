@@ -8,12 +8,11 @@ from flask import current_app, Flask
 from flask.cli import with_appcontext
 from app.containers import Container
 from app.infrastructure.utils import download_catalog
-from app.domain.entities import Dataset
-from app.domain.interfaces import SearchClient
+from app.infrastructure.search_clients import ElasticClient, SearchableDataset
 
 
 @inject
-def seed_db(search_client: SearchClient = Provide[Container.search_client]) -> None:
+def seed_db(search_client: ElasticClient = Provide[Container.search_client]) -> None:
 
     click.echo("Cleaning indices.")
 
@@ -130,7 +129,7 @@ def seed_db(search_client: SearchClient = Provide[Container.search_client]) -> N
                     # Convertion de la string json en dictionnaire
                     jdict = json.loads(json_document)
                     if jdict['resources_count'] != '0':
-                        search_client.index_dataset(Dataset(**jdict))
+                        SearchableDataset(meta={'id': jdict['id']}, **jdict).save()
 
         click.echo("Done.")
 
