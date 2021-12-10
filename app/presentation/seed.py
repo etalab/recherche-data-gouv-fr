@@ -7,20 +7,52 @@ from dependency_injector.wiring import inject, Provide
 from flask import current_app, Flask
 from flask.cli import with_appcontext
 from app.containers import Container
+from app.domain.interfaces import SearchClient
 from app.infrastructure.utils import download_catalog
-from app.infrastructure.search_clients import ElasticClient, SearchableDataset
+from app.infrastructure.search_clients import SearchableDataset, SearchableOrganization, SearchableReuse
 
 
-@inject
-def seed_db(search_client: ElasticClient = Provide[Container.search_client]) -> None:
+def process_org_catalog():
+    click.echo("Processing organizations data.")
+    with NamedTemporaryFile(delete=False) as org_fd:
+        download_catalog(current_app.config['ORG_CATALOG_URL'], org_fd)
+    with open(org_fd.name) as org_csvfile:
+        # Dataframe catalogue orga
+        dfo = pd.read_csv(org_csvfile, dtype="str", sep=";")
 
-    click.echo("Cleaning indices.")
+        # Récupèration de l'information "service public" depuis la colonne badge.
+        # Attribution de la valeur 4 si c'est un SP, 1 si ça ne l'est pas
+        dfo['orga_sp'] = dfo['badges'].apply(lambda x: 4 if 'public-service' in x else 1)
 
-    search_client.delete_index()
-    search_client.create_index()
+        # Sauvegarde en mémoire du dataframe avec uniquement les infos pertinentes
+        dfo = dfo[['id', 'name', 'acronym', 'description', 'url', 'orga_sp', 'metric.followers', 'metric.datasets', 'created_at']]
 
-    click.echo("Downloading catalogs.")
+        # Renommage de l'id de l'organisation et de la métrique followers
+        dfo = dfo.rename(columns={
+            'metric.followers': 'orga_followers',
+            'metric.datasets': 'orga_datasets'
+        })
 
+        dfo['orga_followers'] = dfo['orga_followers'].astype(float)
+        dfo['orga_datasets'] = dfo['orga_datasets'].astype(float)
+
+        mfbins = [-1, 0, 2, 10, 40, df['orga_datasets'].max()]
+        df['orga_datasets'] = pd.cut(df['orga_datasets'], mfbins, labels=list(range(1, 6)))
+        fobins = [-1, 0, 10, 50, 100, df['orga_followers'].max()]
+        df['orga_followers'] = pd.cut(df['orga_followers'], fobins, labels=list(range(1, 6)))
+
+        dfo_as_json = dfo.to_json(orient='records', lines=True)
+        with click.progressbar(dfo_as_json.split('\n')) as bar:
+            for json_document in bar:
+                if json_document != '':
+                    # Convertion de la string json en dictionnaire
+                    jdict = json.loads(json_document)
+                    if jdict['orga_datasets'] != '0':
+                        SearchableOrganization(meta={'id': jdict['id']}, **jdict).save()
+
+
+def process_dataset_catalog():
+    click.echo("Processing datasets data.")
     with NamedTemporaryFile(delete=False) as dataset_fd:
         download_catalog(current_app.config['DATASET_CATALOG_URL'], dataset_fd)
     with NamedTemporaryFile(delete=False) as org_fd:
@@ -100,6 +132,7 @@ def seed_db(search_client: ElasticClient = Provide[Container.search_client]) -> 
             'id',
             'title',
             'url',
+            'created_at',
             'acronym',
             'organization',
             'organization_id',
@@ -131,7 +164,93 @@ def seed_db(search_client: ElasticClient = Provide[Container.search_client]) -> 
                     if jdict['resources_count'] != '0':
                         SearchableDataset(meta={'id': jdict['id']}, **jdict).save()
 
-        click.echo("Done.")
+
+def process_reuse_catalog():
+    click.echo("Processing reuses data.")
+    with NamedTemporaryFile(delete=False) as reuse_fd:
+        download_catalog(current_app.config['REUSE_CATALOG_URL'], reuse_fd)
+    with NamedTemporaryFile(delete=False) as org_fd:
+        download_catalog(current_app.config['ORG_CATALOG_URL'], org_fd)
+    with open(reuse_fd.name) as reuse_csvfile, open(org_fd.name) as org_csvfile:
+        # Dataframe catalogue reuse
+        dfr = pd.read_csv(reuse_csvfile, dtype="str", sep=";")
+        # Dataframe catalogue orga
+        dfo = pd.read_csv(org_csvfile, dtype="str", sep=";")
+
+        # Récupèration de l'information "service public" depuis la colonne badge.
+        # Attribution de la valeur 4 si c'est un SP, 1 si ça ne l'est pas
+        dfo['orga_sp'] = dfo['badges'].apply(lambda x: 4 if 'public-service' in x else 1)
+
+        # Sauvegarde en mémoire du dataframe avec uniquement les infos pertinentes
+        dfo = dfo[['id', 'orga_sp', 'metric.followers']]
+
+        # Renommage de l'id de l'organisation et de la métrique followers
+        dfo = dfo.rename(columns={
+            'id': 'organization_id',
+            'metric.followers': 'orga_followers'
+        })
+
+        # Merge des deux dataframes (dataset et orga) pour n'en garder qu'un seul unique
+        # La colonne de jointure est l'id de l'organisation. On fait un merge de type left join
+        df = pd.merge(dfr, dfo, on='organization_id', how='left')
+
+        df['metric.views'] = df['metric.views'].astype(float)
+        df['metric.followers'] = df['metric.followers'].astype(float)
+        df['orga_followers'] = df['orga_followers'].astype(float)
+
+        mvbins = [-1, 0, 50, 500, 5000, df['metric.views'].max()]
+        df['reuse_views'] = pd.cut(df['metric.views'], mvbins, labels=list(range(1, 6)))
+        mfbins = [-1, 0, 2, 10, 40, df['metric.followers'].max()]
+        df['reuse_followers'] = pd.cut(df['metric.followers'], mfbins, labels=list(range(1, 6)))
+        fobins = [-1, 0, 10, 50, 100, df['orga_followers'].max()]
+        df['orga_followers'] = pd.cut(df['orga_followers'], fobins, labels=list(range(1, 6)))
+
+        df['concat_title_org'] = df['title'] + ' ' + df['acronym'] + ' ' + df['organization']
+
+        df['reuse_featured'] = df['featured'].apply(lambda x: 5 if x == 'True' else 1)
+
+        df = df.rename(columns={'metric.datasets': 'reuse_datasets'})
+
+        df = df[[
+            'id',
+            'title',
+            'slug',
+            'url',
+            'created_at',
+            'organization',
+            'organization_id',
+            'description',
+            'orga_sp',
+            'orga_followers',
+            'reuse_views',
+            'reuse_followers',
+            'reuse_datasets',
+            'concat_title_org',
+            'reuse_featured'
+        ]]
+        # Convertion du dataframe en string json séparée par des \n
+        df_as_json = df.to_json(orient='records', lines=True)
+
+        with click.progressbar(df_as_json.split('\n')) as bar:
+            for json_document in bar:
+                if json_document != '':
+                    # Convertion de la string json en dictionnaire
+                    jdict = json.loads(json_document)
+                    if jdict['reuse_datasets'] != '0':
+                        SearchableReuse(meta={'id': jdict['id']}, **jdict).save()
+
+
+
+@inject
+def seed_db(search_client: SearchClient = Provide[Container.search_client]) -> None:
+    click.echo("Cleaning indices.")
+    search_client.delete_indices()
+    search_client.create_indices()
+    click.echo("Done.")
+    process_org_catalog()
+    process_dataset_catalog()
+    process_reuse_catalog()
+    click.echo("Done.")
 
 
 @click.command("seed-db")

@@ -12,6 +12,7 @@ class Config:
 
     DATASET_CATALOG_URL = 'https://www.data.gouv.fr/fr/datasets/r/f868cca6-8da1-4369-a78d-47463f19a9a3'
     ORG_CATALOG_URL = 'https://www.data.gouv.fr/fr/datasets/r/b7bbfedc-2448-4135-a6c7-104548d396e7'
+    REUSE_CATALOG_URL = 'https://www.data.gouv.fr/fr/datasets/r/970aafa0-3778-4d8b-b9d1-de937525e379'
 
     # BASEROW_API_TOKEN = os.environ.get('POC_RECHERCHE_BASEROW_API_TOKEN') or 'secret'
     # BASEROW_ORG_TYPOLOGY_URL = 'https://api.baserow.io/api/database/rows/table/18703/'

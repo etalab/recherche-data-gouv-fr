@@ -1,5 +1,5 @@
 from dependency_injector import containers, providers
-from app.domain.services import DatasetService
+from app.domain.services import DatasetService, OrganizationService, ReuseService
 from app.infrastructure.search_clients import ElasticClient
 
 
@@ -11,7 +11,17 @@ class Container(containers.DeclarativeContainer):
         url=config.elasticsearch_url
     )
 
+    organization_service = providers.Factory(
+        OrganizationService,
+        search_client=search_client
+    )
+
     dataset_service = providers.Factory(
         DatasetService,
+        search_client=search_client
+    )
+
+    reuse_service = providers.Factory(
+        ReuseService,
         search_client=search_client
     )
