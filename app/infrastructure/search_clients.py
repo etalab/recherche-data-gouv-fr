@@ -1,8 +1,9 @@
+import dataclasses
 from typing import Tuple, Optional
 from elasticsearch.exceptions import NotFoundError
-from elasticsearch_dsl import Index, Document, Integer, Text, tokenizer, token_filter, analyzer, query, Search, Date
+from elasticsearch_dsl import Index, Document, Integer, Text, tokenizer, token_filter, analyzer, query, Date
 from elasticsearch_dsl.connections import connections
-from app.domain.entities import Dataset
+from app.domain.entities import Dataset, Organization, Reuse
 
 
 SEARCH_SYNONYMS = [
@@ -31,11 +32,10 @@ dgv_analyzer = analyzer('french_dgv',
 
 class SearchableOrganization(Document):
     name = Text(analyzer=dgv_analyzer)
-    acronym = Text()
     description = Text(analyzer=dgv_analyzer)
     url = Text()
     orga_sp = Integer()
-    created_at = Date(format='date_hour_minute_second')
+    created_at = Date()
     orga_followers = Integer()
     orga_datasets = Integer()
 
@@ -47,7 +47,7 @@ class SearchableReuse(Document):
     title = Text(analyzer=dgv_analyzer)
     slug = Text()
     url = Text()
-    created_at = Date(format='date_hour_minute_second')
+    created_at = Date()
     orga_sp = Integer()
     orga_followers = Integer()
     reuse_views = Integer()
@@ -67,7 +67,7 @@ class SearchableDataset(Document):
     title = Text(analyzer=dgv_analyzer)
     acronym = Text()
     url = Text()
-    created_at = Date(format='date_hour_minute_second')
+    created_at = Date()
     orga_sp = Integer()
     orga_followers = Integer()
     dataset_views = Integer()
@@ -107,11 +107,21 @@ class ElasticClient:
         SearchableReuse.init()
         SearchableOrganization.init()
 
-    def query_organisations(self, query_text: str, offset: int, page_size: int) -> Tuple[int, list[dict]]:
-        s = Search(index='organization').query('bool', should=[
+    def index_organization(self, to_index: Organization) -> None:
+        SearchableOrganization(meta={'id': to_index.id}, **dataclasses.asdict(to_index)).save(skip_empty=False)
+
+    def index_dataset(self, to_index: Dataset) -> None:
+        SearchableDataset(meta={'id': to_index.id}, **dataclasses.asdict(to_index)).save(skip_empty=False)
+
+    def index_reuse(self, to_index: Reuse) -> None:
+        SearchableReuse(meta={'id': to_index.id}, **dataclasses.asdict(to_index)).save(skip_empty=False)
+
+
+    def query_organizations(self, query_text: str, offset: int, page_size: int) -> Tuple[int, list[dict]]:
+        s = SearchableOrganization.search().query('bool', should=[
                 query.Q(
                     'function_score',
-                        query=query.Bool(should=[query.MultiMatch(query=query_text, type='phrase', fields=['title^15','acronym^15','description^8'])]),
+                        query=query.Bool(should=[query.MultiMatch(query=query_text, type='phrase', fields=['title^15','description^8'])]),
                         functions=[
                             query.SF("field_value_factor", field="orga_sp", factor=8, modifier='sqrt', missing=1),
                             query.SF("field_value_factor", field="orga_followers", factor=4, modifier='sqrt', missing=1),
@@ -123,11 +133,11 @@ class ElasticClient:
         s = s[offset:page_size]
         response = s.execute()
         results_number = response.hits.total.value
-        res = [hit.to_dict() for hit in response.hits]
+        res = [hit.to_dict(skip_empty=False) for hit in response.hits]
         return results_number, res
 
     def query_datasets(self, query_text: str, offset: int, page_size: int) -> Tuple[int, list[dict]]:
-        s = Search(index='dataset').query('bool', should=[
+        s = SearchableDataset.search().query('bool', should=[
                 query.Q(
                     'function_score',
                         query=query.Bool(should=[query.MultiMatch(query=query_text, type='phrase', fields=['title^15','acronym^15','description^8','organization^8'])]),
@@ -308,11 +318,11 @@ class ElasticClient:
         # }
         response = s.execute()
         results_number = response.hits.total.value
-        res = [hit.to_dict() for hit in response.hits]
+        res = [hit.to_dict(skip_empty=False) for hit in response.hits]
         return results_number, res
 
     def query_reuses(self, query_text: str, offset: int, page_size: int) -> Tuple[int, list[dict]]:
-        s = Search(index='reuse').query('bool', should=[
+        s = SearchableReuse.search().query('bool', should=[
                 query.Q(
                     'function_score',
                         query=query.Bool(should=[query.MultiMatch(query=query_text, type='phrase', fields=['title^15','description^8','organization^8'])]),
@@ -340,7 +350,7 @@ class ElasticClient:
         s = s[offset:page_size]
         response = s.execute()
         results_number = response.hits.total.value
-        res = [hit.to_dict() for hit in response.hits]
+        res = [hit.to_dict(skip_empty=False) for hit in response.hits]
         return results_number, res
 
     def find_one_organization(self, organization_id: str) -> Optional[dict]:

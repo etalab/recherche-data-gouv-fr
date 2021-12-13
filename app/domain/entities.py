@@ -7,14 +7,14 @@ DEFAULT_DESCRIPTION = 'Aucune description'
 
 @dataclasses.dataclass
 class Organization:
+    id: str
     name: str
-    acronym: str
     description: str
     url: str
     orga_sp: int
     created_at: str
     orga_followers: int
-    org_datasets: int
+    orga_datasets: int
 
 
 @dataclasses.dataclass
@@ -23,6 +23,7 @@ class Dataset:
     title: str
     acronym: str
     url: str
+    created_at: str
     orga_sp: int
     orga_followers: int
     dataset_views: int
@@ -47,6 +48,7 @@ class Dataset:
 
 @dataclasses.dataclass
 class Reuse:
+    id: str
     title: str
     slug: str
     url: str
@@ -61,7 +63,3 @@ class Reuse:
     organization_id: str
     description: str
     organization: str = DEFAULT_ORG_NAME
-
-    def __post_init__(self):
-        if self.description is None:
-            self.description = DEFAULT_DESCRIPTION

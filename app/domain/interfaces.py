@@ -14,7 +14,15 @@ class SearchClient(ABC):
         pass
 
     @abstractmethod
+    def index_organization(self, to_index: Organization) -> None:
+        pass
+
+    @abstractmethod
     def index_dataset(self, to_index: Dataset) -> None:
+        pass
+
+    @abstractmethod
+    def index_reuse(self, to_index: Reuse) -> None:
         pass
 
     @abstractmethod
