@@ -234,8 +234,7 @@ def seed_db(
     reuse_service: ReuseService = Provide[Container.reuse_service]
     ) -> None:
     click.echo("Cleaning indices.")
-    search_client.delete_indices()
-    search_client.create_indices()
+    search_client.clean_indices()
     click.echo("Done.")
     process_org_catalog(organization_service)
     process_dataset_catalog(dataset_service)

@@ -91,17 +91,15 @@ class ElasticClient:
     def __init__(self, url: str):
         connections.create_connection(hosts=[url])
 
-    def delete_indices(self) -> None:
-        try:
+    def clean_indices(self) -> None:
+        if Index('dataset').exists():
             Index('dataset').delete()
-            Index('reuse').delete()
-            Index('organization').delete()
-        except NotFoundError:
-            pass
-
-    def create_indices(self) -> None:
         SearchableDataset.init()
+        if Index('reuse').exists():
+            Index('reuse').delete()
         SearchableReuse.init()
+        if Index('organization').exists():
+            Index('organization').delete()
         SearchableOrganization.init()
 
     def index_organization(self, to_index: Organization) -> None:
