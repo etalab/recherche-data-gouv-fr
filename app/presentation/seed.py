@@ -35,10 +35,7 @@ def process_org_catalog(organization_service: OrganizationService):
         })
 
         dfo['orga_followers'] = dfo['orga_followers'].astype(float)
-        dfo['orga_datasets'] = dfo['orga_datasets'].astype(float)
 
-        mfbins = [-1, 0, 2, 10, 40, dfo['orga_datasets'].max()]
-        dfo['orga_datasets'] = pd.cut(dfo['orga_datasets'], mfbins, labels=list(range(1, 6)))
         fobins = [-1, 0, 10, 50, 100, dfo['orga_followers'].max()]
         dfo['orga_followers'] = pd.cut(dfo['orga_followers'], fobins, labels=list(range(1, 6)))
 
@@ -174,12 +171,8 @@ def process_reuse_catalog(reuse_service: ReuseService):
         # Dataframe catalogue orga
         dfo = pd.read_csv(org_csvfile, dtype="str", sep=";")
 
-        # Récupèration de l'information "service public" depuis la colonne badge.
-        # Attribution de la valeur 4 si c'est un SP, 1 si ça ne l'est pas
-        dfo['orga_sp'] = dfo['badges'].apply(lambda x: 4 if 'public-service' in x else 1)
-
         # Sauvegarde en mémoire du dataframe avec uniquement les infos pertinentes
-        dfo = dfo[['id', 'orga_sp', 'metric.followers']]
+        dfo = dfo[['id', 'metric.followers']]
 
         # Renommage de l'id de l'organisation et de la métrique followers
         dfo = dfo.rename(columns={
@@ -202,8 +195,6 @@ def process_reuse_catalog(reuse_service: ReuseService):
         fobins = [-1, 0, 10, 50, 100, df['orga_followers'].max()]
         df['orga_followers'] = pd.cut(df['orga_followers'], fobins, labels=list(range(1, 6)))
 
-        df['concat_title_org'] = df['title'] + ' ' + df['organization']
-
         df['reuse_featured'] = df['featured'].apply(lambda x: 5 if x == 'True' else 1)
 
         df = df.rename(columns={'metric.datasets': 'reuse_datasets'})
@@ -211,18 +202,15 @@ def process_reuse_catalog(reuse_service: ReuseService):
         df = df[[
             'id',
             'title',
-            'slug',
             'url',
             'created_at',
             'organization',
             'organization_id',
             'description',
-            'orga_sp',
             'orga_followers',
             'reuse_views',
             'reuse_followers',
             'reuse_datasets',
-            'concat_title_org',
             'reuse_featured'
         ]]
         # Convertion du dataframe en string json séparée par des \n

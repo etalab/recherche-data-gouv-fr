@@ -50,16 +50,13 @@ class Dataset:
 class Reuse:
     id: str
     title: str
-    slug: str
     url: str
     created_at: str
-    orga_sp: int
     orga_followers: int
     reuse_views: int
     reuse_followers: int
     reuse_datasets: int
     reuse_featured: int
-    concat_title_org: str
     organization_id: str
     description: str
     organization: str = DEFAULT_ORG_NAME
