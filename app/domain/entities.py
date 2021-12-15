@@ -6,11 +6,24 @@ DEFAULT_DESCRIPTION = 'Aucune description'
 
 
 @dataclasses.dataclass
+class Organization:
+    id: str
+    name: str
+    description: str
+    url: str
+    orga_sp: int
+    created_at: str
+    orga_followers: int
+    orga_datasets: int
+
+
+@dataclasses.dataclass
 class Dataset:
     id: str
     title: str
     acronym: str
     url: str
+    created_at: str
     orga_sp: int
     orga_followers: int
     dataset_views: int
@@ -25,16 +38,25 @@ class Dataset:
     spatial_granularity: str
     spatial_zones: str
     description: str
-    dataset_resources: int = 0
     organization_logo: str = DEFAULT_ORG_LOGO
     organization: str = DEFAULT_ORG_NAME
 
     def __post_init__(self):
         if self.description is None:
             self.description = DEFAULT_DESCRIPTION
-        # for field in dataclasses.fields(self):
-        #     value = getattr(self, field.name)
-        #     if not isinstance(value, field.type):
-        #         raise ValueError(f'Expected {field.name} to be {field.type}, '
-        #                         f'got {repr(value)}')
-        #         setattr(self, field.name, field.type(value))
+
+
+@dataclasses.dataclass
+class Reuse:
+    id: str
+    title: str
+    url: str
+    created_at: str
+    orga_followers: int
+    reuse_views: int
+    reuse_followers: int
+    reuse_datasets: int
+    reuse_featured: int
+    organization_id: str
+    description: str
+    organization: str = DEFAULT_ORG_NAME

@@ -35,7 +35,6 @@ def single_dataset():
         temporal_coverage_end='',
         spatial_granularity='',
         spatial_zones='',
-        dataset_resources=0,
         concat_title_org='test-dataset-title orga',
         organization_logo='logo.png',
         organization_id='orga-id',
