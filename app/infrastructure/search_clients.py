@@ -182,18 +182,18 @@ class ElasticClient:
 
     def find_one_organization(self, organization_id: str) -> Optional[dict]:
         try:
-            return SearchableOrganization.get(id=organization_id).to_dict()
+            return SearchableOrganization.get(id=organization_id).to_dict(skip_empty=False)
         except NotFoundError:
             return None
 
     def find_one_dataset(self, dataset_id: str) -> Optional[dict]:
         try:
-            return SearchableDataset.get(id=dataset_id).to_dict()
+            return SearchableDataset.get(id=dataset_id).to_dict(skip_empty=False)
         except NotFoundError:
             return None
 
     def find_one_reuse(self, reuse_id: str) -> Optional[dict]:
         try:
-            return SearchableReuse.get(id=reuse_id).to_dict()
+            return SearchableReuse.get(id=reuse_id).to_dict(skip_empty=False)
         except NotFoundError:
             return None
