@@ -26,7 +26,8 @@ class OrganizationService:
         return results, results_number, total_pages
 
     def find_one(self, organization_id: str) -> Optional[Organization]:
-        return Organization(**self.search_client.find_one_organization(organization_id)) or None
+        found = self.search_client.find_one_organization(organization_id)
+        return Organization(**found) if found else None
 
 
 class DatasetService:
@@ -52,7 +53,8 @@ class DatasetService:
         return results, results_number, total_pages
 
     def find_one(self, dataset_id: str) -> Optional[Dataset]:
-        return Dataset(**self.search_client.find_one_dataset(dataset_id)) or None
+        found = self.search_client.find_one_dataset(dataset_id)
+        return Dataset(**found) if found else None
 
 
 class ReuseService:
@@ -78,4 +80,5 @@ class ReuseService:
         return results, results_number, total_pages
 
     def find_one(self, reuse_id: str) -> Optional[Reuse]:
-        return Reuse(**self.search_client.find_one_reuse(reuse_id)) or None
+        found = self.search_client.find_one_reuse(reuse_id)
+        return Reuse(**found) if found else None
