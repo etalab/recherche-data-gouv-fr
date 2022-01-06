@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List
 from elasticsearch.exceptions import NotFoundError
 from elasticsearch_dsl import Index, Document, Integer, Text, tokenizer, token_filter, analyzer, query, Date
 from elasticsearch_dsl.connections import connections
@@ -112,7 +112,7 @@ class ElasticClient:
         SearchableReuse(meta={'id': to_index.id}, **dataclasses.asdict(to_index)).save(skip_empty=False)
 
 
-    def query_organizations(self, query_text: str, offset: int, page_size: int) -> Tuple[int, list[dict]]:
+    def query_organizations(self, query_text: str, offset: int, page_size: int) -> Tuple[int, List[dict]]:
         s = SearchableOrganization.search().query('bool', should=[
                 query.Q(
                     'function_score',
@@ -131,7 +131,7 @@ class ElasticClient:
         res = [hit.to_dict(skip_empty=False) for hit in response.hits]
         return results_number, res
 
-    def query_datasets(self, query_text: str, offset: int, page_size: int) -> Tuple[int, list[dict]]:
+    def query_datasets(self, query_text: str, offset: int, page_size: int) -> Tuple[int, List[dict]]:
         datasets_score_functions = [
             query.SF("field_value_factor", field="orga_sp", factor=8, modifier='sqrt', missing=1),
             query.SF("field_value_factor", field="dataset_views", factor=4, modifier='sqrt', missing=1),
@@ -160,7 +160,7 @@ class ElasticClient:
         res = [hit.to_dict(skip_empty=False) for hit in response.hits]
         return results_number, res
 
-    def query_reuses(self, query_text: str, offset: int, page_size: int) -> Tuple[int, list[dict]]:
+    def query_reuses(self, query_text: str, offset: int, page_size: int) -> Tuple[int, List[dict]]:
         s = SearchableReuse.search().query('bool', should=[
                 query.Q(
                     'function_score',
