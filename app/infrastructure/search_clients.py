@@ -116,7 +116,7 @@ class ElasticClient:
         s = SearchableOrganization.search().query('bool', should=[
                 query.Q(
                     'function_score',
-                        query=query.Bool(should=[query.MultiMatch(query=query_text, type='phrase', fields=['title^15','description^8'])]),
+                        query=query.Bool(should=[query.MultiMatch(query=query_text, type='phrase', fields=['name^15','description^8'])]),
                         functions=[
                             query.SF("field_value_factor", field="orga_sp", factor=8, modifier='sqrt', missing=1),
                             query.SF("field_value_factor", field="orga_followers", factor=4, modifier='sqrt', missing=1),
