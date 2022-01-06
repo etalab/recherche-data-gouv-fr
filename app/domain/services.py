@@ -1,4 +1,4 @@
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List
 from app.domain.entities import Dataset, Organization, Reuse
 from app.domain.interfaces import SearchClient
 
@@ -11,8 +11,8 @@ class OrganizationService:
     def feed(self, organization: Organization) -> None:
         self.search_client.index_organization(organization)
 
-    def search(self, search_text: str, page: int, page_size: int) -> Tuple[list[Organization], int, int]:
-        results: list[Organization]
+    def search(self, search_text: str, page: int, page_size: int) -> Tuple[List[Organization], int, int]:
+        results: List[Organization]
         results_number: int
 
         if page > 1:
@@ -38,8 +38,8 @@ class DatasetService:
     def feed(self, dataset: Dataset) -> None:
         self.search_client.index_dataset(dataset)
 
-    def search(self, search_text: str, page: int, page_size: int) -> Tuple[list[Dataset], int, int]:
-        results: list[Dataset]
+    def search(self, search_text: str, page: int, page_size: int) -> Tuple[List[Dataset], int, int]:
+        results: List[Dataset]
         results_number: int
 
         if page > 1:
@@ -65,8 +65,8 @@ class ReuseService:
     def feed(self, reuse: Reuse) -> None:
         self.search_client.index_reuse(reuse)
 
-    def search(self, search_text: str, page: int, page_size: int) -> Tuple[list[Reuse], int, int]:
-        results: list[Reuse]
+    def search(self, search_text: str, page: int, page_size: int) -> Tuple[List[Reuse], int, int]:
+        results: List[Reuse]
         results_number: int
 
         if page > 1:
