@@ -2,7 +2,7 @@
 
 ## Getting started
 
-Start the elasticsearch:
+Start the elasticsearch and the kafka consumer:
 ```
 docker-compose up
 ```
